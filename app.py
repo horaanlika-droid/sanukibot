@@ -6,8 +6,10 @@ from aiogram.enums import ParseMode
 
 from config import BOT_TOKEN
 from db import init_db
+from menu import router
 
 dp = Dispatcher()
+dp.include_router(router)
 
 bot = Bot(
     token=BOT_TOKEN,
