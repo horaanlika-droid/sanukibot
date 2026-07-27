@@ -5,6 +5,7 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
 from config import BOT_TOKEN
+from db import init_db
 
 dp = Dispatcher()
 
@@ -17,9 +18,14 @@ bot = Bot(
 
 
 async def main():
+    # Создаем базу данных при запуске
+    init_db()
+
     print("🍜 SANUKI BOT запущен!")
+
+    # Запуск бота
     await dp.start_polling(bot)
 
 
 if __name__ == "__main__":
-    asyncio.run(main()) 
+    asyncio.run(main())
