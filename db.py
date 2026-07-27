@@ -11,31 +11,66 @@ def get_connection():
 
 def init_db():
     conn = get_connection()
-    cursor = conn.cursor()
+    cur = conn.cursor()
 
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        telegram_id INTEGER UNIQUE,
-        username TEXT,
-        first_name TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS users(
+            telegram_id INTEGER PRIMARY KEY,
+            name TEXT,
+            username TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
     """)
 
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS orders (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER,
-        guest_name TEXT,
-        order_type TEXT,
-        hall TEXT,
-        status TEXT,
-        total INTEGER,
-        comment TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS orders(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            telegram_id INTEGER,
+            guest_name TEXT,
+            order_type TEXT,
+            status TEXT,
+            total INTEGER DEFAULT 0,
+            comment TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
     """)
 
     conn.commit()
-    conn.close() 
+    conn.close()
+
+
+def user_exists(telegram_id: int):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute(
+        "SELECT * FROM users WHERE telegram_id=?",
+        (telegram_id,)
+    )
+
+    user = cur.fetchone()
+
+    conn.close()
+
+    return user
+
+
+def add_user(telegram_id: int, name: str, username: str):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+        INSERT OR REPLACE INTO users
+        (telegram_id, name, username)
+        VALUES (?, ?, ?)
+        """,
+        (
+            telegram_id,
+            name,
+            username
+        )
+    )
+
+    conn.commit()
+    conn.close()
