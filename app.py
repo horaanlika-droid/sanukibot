@@ -18,12 +18,10 @@ bot = Bot(
 
 
 async def main():
-    # Создаем базу данных при запуске
     init_db()
 
     print("🍜 SANUKI BOT запущен!")
 
-    # Запуск бота
     await dp.start_polling(bot)
 
 
